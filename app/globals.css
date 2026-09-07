@@ -1,0 +1,227 @@
+@import "tailwindcss";
+
+@theme {
+  --color-ink-950: #050706;
+  --color-ink-900: #080b09;
+  --color-ink-850: #0b100d;
+  --color-ink-800: #0f1512;
+  --color-ink-700: #161d19;
+  --color-ink-600: #1e2723;
+  --color-ink-500: #2b3630;
+
+  --color-brand-50: #eafbee;
+  --color-brand-200: #a8ecb8;
+  --color-brand-400: #4fd96b;
+  --color-brand-500: #2fbf4a;
+  --color-brand-600: #22a03c;
+  --color-brand-700: #1a7d30;
+  --color-brand-900: #0d3d18;
+
+  --color-volt-400: #4ee6c6;
+  --color-volt-500: #22cfae;
+
+  --color-amber-glow: #ffc53d;
+
+  --color-mist-100: #eef3ef;
+  --color-mist-300: #c3cfc7;
+  --color-mist-500: #8b9a91;
+  --color-mist-600: #6d7d74;
+
+  --font-display: var(--font-outfit), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+
+  --animate-marquee: marquee 38s linear infinite;
+  --animate-float-slow: floatSlow 9s ease-in-out infinite;
+  --animate-pulse-ring: pulseRing 3.4s ease-out infinite;
+  --animate-spin-slow: spin 22s linear infinite;
+}
+
+@keyframes marquee {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(-50%, 0, 0); }
+}
+@keyframes floatSlow {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(0, -14px, 0); }
+}
+@keyframes pulseRing {
+  0% { transform: scale(0.85); opacity: 0.55; }
+  70% { transform: scale(1.5); opacity: 0; }
+  100% { transform: scale(1.5); opacity: 0; }
+}
+@keyframes dashFlow {
+  to { stroke-dashoffset: -1000; }
+}
+@keyframes sheen {
+  0% { transform: translateX(-120%) skewX(-18deg); }
+  60%, 100% { transform: translateX(320%) skewX(-18deg); }
+}
+@keyframes flicker {
+  0%, 100% { opacity: 1; }
+  42% { opacity: 1; }
+  44% { opacity: 0.35; }
+  46% { opacity: 1; }
+  61% { opacity: 1; }
+  63% { opacity: 0.55; }
+  65% { opacity: 1; }
+}
+
+@layer base {
+  * {
+    border-color: color-mix(in oklch, var(--color-ink-600) 100%, transparent);
+  }
+
+  html {
+    overflow-x: clip;
+    scroll-behavior: smooth;
+    scroll-padding-top: 5.5rem;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--color-ink-950);
+    color: var(--color-mist-100);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: clip;
+  }
+
+  ::selection {
+    background: var(--color-brand-500);
+    color: #04170a;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: var(--font-display);
+    letter-spacing: -0.025em;
+    text-wrap: balance;
+  }
+
+  p { text-wrap: pretty; }
+
+  ::-webkit-scrollbar { width: 11px; height: 11px; }
+  ::-webkit-scrollbar-track { background: var(--color-ink-900); }
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-ink-600);
+    border-radius: 999px;
+    border: 3px solid var(--color-ink-900);
+  }
+  ::-webkit-scrollbar-thumb:hover { background: var(--color-brand-700); }
+}
+
+@layer components {
+  /* --- reveal on scroll --- */
+  .rv {
+    opacity: 0;
+    transform: translate3d(0, 26px, 0);
+    transition:
+      opacity 0.75s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.75s cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: opacity, transform;
+  }
+  .rv[data-shown="true"] {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* --- gradient hairline border card --- */
+  .edge {
+    position: relative;
+    isolation: isolate;
+  }
+  .edge::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(
+      145deg,
+      color-mix(in srgb, var(--color-brand-400) 55%, transparent),
+      color-mix(in srgb, var(--color-mist-500) 12%, transparent) 38%,
+      transparent 62%,
+      color-mix(in srgb, var(--color-volt-400) 30%, transparent)
+    );
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  /* --- spotlight follow on cards --- */
+  .spot {
+    position: relative;
+    overflow: hidden;
+  }
+  .spot::after {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    background: radial-gradient(
+      340px circle at var(--mx, 50%) var(--my, 0%),
+      color-mix(in srgb, var(--color-brand-400) 16%, transparent),
+      transparent 62%
+    );
+    opacity: 0;
+    transition: opacity 0.45s ease;
+    pointer-events: none;
+    z-index: 1;
+  }
+  .spot:hover::after { opacity: 1; }
+
+  /* --- shiny sweep on buttons --- */
+  .sheen { position: relative; overflow: hidden; }
+  .sheen > .sheen-bar {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 45%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.28),
+      transparent
+    );
+    pointer-events: none;
+  }
+  .sheen:hover > .sheen-bar { animation: sheen 0.95s ease-out; }
+
+  .grid-fade {
+    background-image:
+      linear-gradient(to right, color-mix(in srgb, var(--color-mist-500) 9%, transparent) 1px, transparent 1px),
+      linear-gradient(to bottom, color-mix(in srgb, var(--color-mist-500) 9%, transparent) 1px, transparent 1px);
+    background-size: 62px 62px;
+    -webkit-mask-image: radial-gradient(ellipse 90% 62% at 50% 8%, #000 20%, transparent 78%);
+    mask-image: radial-gradient(ellipse 90% 62% at 50% 8%, #000 20%, transparent 78%);
+  }
+
+  .noise::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    opacity: 0.4;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.055'/%3E%3C/svg%3E");
+  }
+
+  .flow-line {
+    stroke-dasharray: 14 220;
+    animation: dashFlow 6s linear infinite;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+  .rv { opacity: 1 !important; transform: none !important; }
+}
